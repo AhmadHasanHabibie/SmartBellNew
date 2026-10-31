@@ -7,6 +7,7 @@ use App\Models\Device;
 use App\Models\Telemetry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class TelemetryApiController extends Controller
@@ -91,19 +92,83 @@ class TelemetryApiController extends Controller
             'cahaya_barat' => $device->device_type === 'outdoor' ? $request->input('cahaya_barat') : null,
         ]);
 
-        // 7. Kembalikan Response JSON 201 Created ke ESP32
+        // 7. Push Notification Trigger (Tamu / Kurir / Bahaya Gas)
+        $statusBel = (int) $request->input('status_bel', 0);
+        if ($statusBel === 1) {
+            $this->sendTelegramNotification("🔔 [IoTR // NEXUS] Tamu terdeteksi di gerbang depan! Node: {$device->device_name} ({$device->nama_ruangan})");
+        } elseif ($statusBel === 2) {
+            $this->sendTelegramNotification("📦 [IoTR // NEXUS] Kurir paket terdeteksi di gerbang depan! Node: {$device->device_name} ({$device->nama_ruangan})");
+        }
+
+        if ($device->device_type === 'indoor' && $kadarGas !== null && $kadarGas >= 3000) {
+            $this->sendTelegramNotification("🚨 [CRITICAL ALERT] Kebocoran gas terdeteksi! MQ-2: {$kadarGas} ADC di {$device->nama_ruangan} ({$device->device_name})");
+        }
+
+        // 8. Sistem Interkom 2 Arah: Deteksi pending_action untuk ESP32
+        if ($device->pending_action === 'diluar') {
+            // Reset status di database menjadi null agar tidak terkirim berulang kali
+            $device->update([
+                'pending_action' => null,
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Action dispatched: diluar',
+                'reply_action' => 'diluar',
+                'device' => [
+                    'id' => $device->id,
+                    'device_name' => $device->device_name,
+                    'device_type' => $device->device_type,
+                    'is_paired' => $device->user_id !== null,
+                    'last_seen_at' => $device->last_seen_at ? $device->last_seen_at->toIso8601String() : null,
+                ],
+                'data' => $telemetry,
+            ], 200);
+        }
+
+        // Respons normal jika tidak ada pending_action
         return response()->json([
             'status' => 'success',
-            'message' => 'Data telemetri ESP32 berhasil direkam.',
+            'message' => 'Data saved',
+            'reply_action' => null,
             'device' => [
                 'id' => $device->id,
                 'device_name' => $device->device_name,
                 'device_type' => $device->device_type,
                 'is_paired' => $device->user_id !== null,
-                'last_seen_at' => $device->last_seen_at->toIso8601String(),
+                'last_seen_at' => $device->last_seen_at ? $device->last_seen_at->toIso8601String() : null,
             ],
             'data' => $telemetry,
-        ], 201);
+        ], 200);
+    }
+
+    /**
+     * Skeleton/Kerangka Helper untuk Push Notification Telegram Bot.
+     * Dapat diisi dengan cURL / Http::post() ke Telegram Bot API:
+     * https://api.telegram.org/bot<TOKEN>/sendMessage
+     *
+     * @param string $message
+     * @return void
+     */
+    protected function sendTelegramNotification(string $message): void
+    {
+        /*
+        |----------------------------------------------------------------------
+        | Skeleton Integrasi Telegram Bot API:
+        |----------------------------------------------------------------------
+        | $botToken = env('TELEGRAM_BOT_TOKEN', 'YOUR_BOT_TOKEN');
+        | $chatId = env('TELEGRAM_CHAT_ID', 'YOUR_CHAT_ID');
+        |
+        | if (!empty($botToken) && !empty($chatId)) {
+        |     \Illuminate\Support\Facades\Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
+        |         'chat_id' => $chatId,
+        |         'text' => $message,
+        |         'parse_mode' => 'HTML',
+        |     ]);
+        | }
+        |----------------------------------------------------------------------
+        */
+
+        Log::info('[Telegram Notification] ' . $message);
     }
 }
-

@@ -38,6 +38,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/dashboard/pair', [DashboardController::class, 'pairDevice'])->name('device.pair');
     Route::delete('/dashboard/device/{device}/unpair', [DashboardController::class, 'unpairDevice'])->name('device.unpair');
 
+    // Endpoint Interkom 2 Arah: Mengatur pending action (misal: 'diluar')
+    Route::post('/device/{device}/set-action', [DashboardController::class, 'setPendingAction'])->name('device.set-action');
+
     // Endpoint AJAX Polling Real-Time & Riwayat Chart.js
     Route::get('/dashboard/device/{device}/json', [DashboardController::class, 'getDeviceTelemetry'])->name('device.json');
 });

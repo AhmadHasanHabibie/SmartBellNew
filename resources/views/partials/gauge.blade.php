@@ -26,7 +26,7 @@
         ];
     }
 @endphp
-<svg viewBox="0 0 200 118" class="w-full max-w-[220px]" role="img" aria-label="{{ $label ?? 'Gauge' }}">
+<svg viewBox="0 0 200 118" class="w-full max-w-[180px] sm:max-w-[210px]" role="img" aria-label="{{ $label ?? 'Gauge' }}">
     <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="#27272a" stroke-width="10"/>
 
     @if ($variant === 'zones')

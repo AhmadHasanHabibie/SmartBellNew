@@ -24,6 +24,7 @@ class Device extends Model
         'device_type',
         'nama_ruangan',
         'api_token',
+        'pending_action',
         'last_seen_at',
     ];
 

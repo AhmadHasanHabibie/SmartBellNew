@@ -3,41 +3,41 @@
 @section('title', 'Masuk — IoTR // NEXUS')
 
 @section('content')
-<div class="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-12 lg:gap-12 lg:px-8 lg:py-16">
+<div class="mx-auto grid max-w-6xl gap-6 sm:gap-8 px-3.5 py-6 sm:px-6 sm:py-10 lg:grid-cols-12 lg:gap-12 lg:px-8 lg:py-16">
 
     {{-- ============================================================== --}}
     {{-- KOLOM KIRI — LEMBAR SPESIFIKASI SISTEM                           --}}
     {{-- ============================================================== --}}
     <section class="order-2 lg:order-1 lg:col-span-7">
-        <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-emerald-500">System Access</p>
-        <h1 class="mt-3 max-w-xl text-3xl font-bold tracking-tight text-zinc-100 sm:text-4xl">
+        <p class="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-emerald-500">System Access</p>
+        <h1 class="mt-2 sm:mt-3 max-w-xl text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-zinc-100">
             Pusat kendali Smart Bell &amp; Gas Mechatronics.
         </h1>
-        <p class="mt-4 max-w-xl text-sm leading-relaxed text-zinc-400">
+        <p class="mt-2.5 sm:mt-4 max-w-xl text-xs sm:text-sm leading-relaxed text-zinc-400">
             Pantau unit outdoor (bel KY-004, solar tracker) dan unit indoor (MQ-2, DHT22, gauge servo, TFT)
             dari satu panel. ESP32 mengirim telemetri lewat HTTP, sedangkan panggilan bel diteruskan
             antar-unit secara lokal melalui ESP-NOW.
         </p>
 
-        <div class="mt-8 rounded-sm border border-zinc-800">
-            <div class="flex items-center justify-between border-b border-zinc-800 bg-zinc-950 px-4 py-2">
-                <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">Spesifikasi Sistem</span>
-                <span class="font-mono text-[10px] text-zinc-600">REV 1.0</span>
+        <div class="mt-6 sm:mt-8 rounded-sm border border-zinc-800">
+            <div class="flex items-center justify-between border-b border-zinc-800 bg-zinc-950 px-3.5 sm:px-4 py-2">
+                <span class="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.18em] text-zinc-400">Spesifikasi Sistem</span>
+                <span class="font-mono text-[9px] sm:text-[10px] text-zinc-600">REV 1.0</span>
             </div>
-            <dl class="divide-y divide-zinc-800 font-mono text-xs">
-                <div class="grid grid-cols-3 gap-4 px-4 py-2.5">
+            <dl class="divide-y divide-zinc-800 font-mono text-[11px] sm:text-xs">
+                <div class="grid grid-cols-3 gap-2 sm:gap-4 px-3.5 sm:px-4 py-2 sm:py-2.5">
                     <dt class="text-zinc-500">NODE A</dt>
                     <dd class="col-span-2 text-zinc-200">Outdoor · KY-004 · LDR ×2 · Servo SG90</dd>
                 </div>
-                <div class="grid grid-cols-3 gap-4 px-4 py-2.5">
+                <div class="grid grid-cols-3 gap-2 sm:gap-4 px-3.5 sm:px-4 py-2 sm:py-2.5">
                     <dt class="text-zinc-500">NODE B</dt>
                     <dd class="col-span-2 text-zinc-200">Indoor · MQ-2 · DHT22 · Servo D13 · TFT · Buzzer D4</dd>
                 </div>
-                <div class="grid grid-cols-3 gap-4 px-4 py-2.5">
+                <div class="grid grid-cols-3 gap-2 sm:gap-4 px-3.5 sm:px-4 py-2 sm:py-2.5">
                     <dt class="text-zinc-500">LINK</dt>
                     <dd class="col-span-2 text-zinc-200">ESP-NOW (lokal) + HTTP POST (cloud)</dd>
                 </div>
-                <div class="grid grid-cols-3 gap-4 px-4 py-2.5">
+                <div class="grid grid-cols-3 gap-2 sm:gap-4 px-3.5 sm:px-4 py-2 sm:py-2.5">
                     <dt class="text-zinc-500">AMBANG GAS</dt>
                     <dd class="col-span-2 text-zinc-200">
                         <span class="text-emerald-400">&lt;1500</span> /
@@ -48,7 +48,7 @@
             </dl>
         </div>
 
-        <div class="mt-6">
+        <div class="mt-5 sm:mt-6">
             @include('partials.device-plate')
         </div>
     </section>
@@ -58,12 +58,12 @@
     {{-- ============================================================== --}}
     <section class="order-1 lg:order-2 lg:col-span-5">
         <div class="rounded-sm border border-zinc-800 bg-zinc-950">
-            <div class="flex items-center justify-between border-b border-zinc-800 px-5 py-3">
+            <div class="flex items-center justify-between border-b border-zinc-800 px-4 sm:px-5 py-2.5 sm:py-3">
                 <h2 class="text-sm font-semibold text-zinc-100">Masuk ke Konsol</h2>
                 <span class="font-mono text-[10px] uppercase tracking-wider text-zinc-500">Auth / 01</span>
             </div>
 
-            <div class="p-5">
+            <div class="p-4 sm:p-5">
                 @if (session('success'))
                     <div class="mb-4 border-l-2 border-emerald-500 bg-zinc-900 px-3 py-2 text-xs text-zinc-200">
                         {{ session('success') }}
@@ -85,14 +85,14 @@
                     @csrf
 
                     <div>
-                        <label for="email" class="mb-1.5 block font-mono text-[10px] uppercase tracking-wider text-zinc-400">Email</label>
+                        <label for="email" class="mb-1 sm:mb-1.5 block font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-zinc-400">Email</label>
                         <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="email"
                             placeholder="operator@domain.id"
                             class="h-10 w-full rounded-sm border bg-zinc-900 px-3 font-mono text-sm text-zinc-100 placeholder-zinc-600 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 @error('email') border-red-600 @else border-zinc-700 @enderror">
                     </div>
 
                     <div>
-                        <label for="password" class="mb-1.5 block font-mono text-[10px] uppercase tracking-wider text-zinc-400">Kata Sandi</label>
+                        <label for="password" class="mb-1 sm:mb-1.5 block font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-zinc-400">Kata Sandi</label>
                         <input type="password" id="password" name="password" required autocomplete="current-password"
                             placeholder="••••••••"
                             class="h-10 w-full rounded-sm border bg-zinc-900 px-3 font-mono text-sm text-zinc-100 placeholder-zinc-600 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 @error('password') border-red-600 @else border-zinc-700 @enderror">
@@ -110,7 +110,7 @@
                 </form>
             </div>
 
-            <div class="border-t border-zinc-800 px-5 py-3 text-xs text-zinc-500">
+            <div class="border-t border-zinc-800 px-4 sm:px-5 py-3 text-xs text-zinc-500">
                 Belum punya akun?
                 <a href="{{ route('register') }}" class="font-semibold text-zinc-200 underline decoration-zinc-600 underline-offset-4 hover:decoration-emerald-500">Daftar akun pemilik</a>
             </div>

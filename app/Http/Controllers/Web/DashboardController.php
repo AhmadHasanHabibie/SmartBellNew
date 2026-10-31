@@ -50,6 +50,18 @@ class DashboardController extends Controller
             return $device->latestTelemetry ? (int) $device->latestTelemetry->status_bel : 0;
         }) ?? 0;
 
+        // Ambil 5 riwayat telemetri keamanan terkini (Tamu, Kurir, atau Gas Bahaya)
+        $userDeviceIds = $devices->pluck('id');
+        $securityLogs = Telemetry::whereIn('device_id', $userDeviceIds)
+            ->where(function ($query) {
+                $query->where('status_bel', '!=', 0)
+                    ->orWhere('kadar_gas', '>=', 3000);
+            })
+            ->with('device')
+            ->latest()
+            ->take(5)
+            ->get();
+
         return view('dashboard.index', compact(
             'devices',
             'totalDevices',
@@ -58,7 +70,8 @@ class DashboardController extends Controller
             'onlineCount',
             'hasGasDanger',
             'hasGasWarning',
-            'activeBellStatus'
+            'activeBellStatus',
+            'securityLogs'
         ));
     }
 
@@ -127,6 +140,7 @@ class DashboardController extends Controller
         $device->update([
             'user_id' => null,
             'nama_ruangan' => null,
+            'pending_action' => null,
         ]);
 
         return redirect('/dashboard')
@@ -176,6 +190,7 @@ class DashboardController extends Controller
                 'device_name' => $device->device_name,
                 'device_type' => $device->device_type,
                 'nama_ruangan' => $device->nama_ruangan,
+                'pending_action' => $device->pending_action,
             ],
             'is_online' => $device->isOnline(),
             'last_seen_human' => $device->last_seen_at
@@ -183,6 +198,41 @@ class DashboardController extends Controller
                 : 'Belum pernah sinkron',
             'latest' => $latest,
             'history' => $history,
+        ]);
+    }
+
+    /**
+     * Mengatur pending action (interkom 2 arah) untuk perangkat milik pengguna.
+     * Endpoint: POST /device/{device}/set-action
+     */
+    public function setPendingAction(Request $request, Device $device): JsonResponse
+    {
+        if ((int) $device->user_id !== (int) Auth::id()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Forbidden: Anda tidak memiliki hak akses atas perangkat ini.',
+            ], 403);
+        }
+
+        $validated = $request->validate([
+            'action' => ['nullable', 'string', 'max:50'],
+        ]);
+
+        $action = $validated['action'] ?? 'diluar';
+
+        $device->update([
+            'pending_action' => $action,
+        ]);
+
+        $message = $action
+            ? "Status diatur! Alat Outdoor akan segera merespons."
+            : "Status tindakan untuk {$device->device_name} telah dinetralkan.";
+
+        return response()->json([
+            'status' => 'success',
+            'message' => $message,
+            'device_id' => $device->id,
+            'pending_action' => $device->pending_action,
         ]);
     }
 }
